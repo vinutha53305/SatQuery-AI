@@ -7,7 +7,6 @@ from app.ai_model import SatelliteAI
 from app.caption_model import SatelliteCaptioner
 from app.land_cover import LandCoverAnalyzer
 
-
 st.set_page_config(
     page_title="SatQuery AI",
     page_icon="🛰️",
@@ -15,59 +14,114 @@ st.set_page_config(
 )
 
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
 
-.stApp {
-    background: #07111f;
-    color: #e8f1ff;
-}
+    .stApp {
+        background: #07131d;
+        color: white;
+    }
 
-section[data-testid="stSidebar"] {
-    background: #0b1728;
-}
+    [data-testid="stSidebar"] {
+        background: #0a1b27;
+    }
 
-h1, h2, h3 {
-    color: #dcecff;
-}
+    [data-testid="stSidebar"] * {
+        color: white;
+    }
 
-.card {
-    background: #0d1b2e;
-    border: 1px solid #1d3557;
-    border-radius: 15px;
-    padding: 22px;
-    margin-bottom: 18px;
-}
+    .hero {
+        padding: 30px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #0c2636, #0a1824);
+        border: 1px solid #173b50;
+        margin-bottom: 25px;
+    }
 
-.metric-card {
-    background: #10233a;
-    border-radius: 12px;
-    padding: 18px;
-    text-align: center;
-    border: 1px solid #21476d;
-}
+    .badge {
+        color: #55c7e8;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
 
-.small-text {
-    color: #9fb3c8;
-}
+    .hero-title {
+        font-size: 38px;
+        font-weight: 800;
+        margin-top: 8px;
+    }
 
-.answer-box {
-    background: #0d1b2e;
-    border-left: 4px solid #4da3ff;
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 15px;
-}
+    .hero-subtitle {
+        color: #91a9b8;
+        font-size: 17px;
+        margin-top: 8px;
+    }
 
-.warning-box {
-    background: #2a2110;
-    border-left: 4px solid #e5a93d;
-    padding: 15px;
-    border-radius: 10px;
-}
+    .card {
+        background: #0c202e;
+        border: 1px solid #17394c;
+        border-radius: 16px;
+        padding: 20px;
+        margin: 12px 0;
+    }
 
-</style>
-""", unsafe_allow_html=True)
+    .metric-card {
+        background: #0c202e;
+        border: 1px solid #17394c;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .metric-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #60d5f5;
+    }
+
+    .metric-label {
+        color: #8fa9bb;
+        margin-top: 5px;
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: 750;
+        margin-top: 20px;
+        margin-bottom: 15px;
+    }
+
+    .workflow {
+        background: #0c202e;
+        border: 1px solid #17394c;
+        border-radius: 16px;
+        padding: 18px;
+        text-align: center;
+    }
+
+    .workflow-number {
+        font-size: 26px;
+        font-weight: 800;
+        color: #60d5f5;
+    }
+
+    .workflow-title {
+        font-size: 17px;
+        font-weight: 700;
+        margin-top: 8px;
+    }
+
+    .workflow-text {
+        color: #8fa9bb;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 
 @st.cache_resource
@@ -86,9 +140,6 @@ def get_land_cover_model():
 
 
 def load_image(uploaded_file):
-    if uploaded_file is None:
-        return None
-
     return Image.open(uploaded_file).convert("RGB")
 
 
@@ -100,7 +151,7 @@ def image_download_bytes(image):
 
 def route_question(question):
 
-    q = question.lower().strip()
+    question = question.lower()
 
     change_words = [
         "change",
@@ -109,30 +160,12 @@ def route_question(question):
         "different",
         "compare",
         "comparison",
-        "before and after",
-        "before vs after",
+        "before",
+        "after",
         "construction",
         "demolition",
         "growth",
         "development"
-    ]
-
-    land_cover_words = [
-        "land cover",
-        "land-cover",
-        "land type",
-        "urban",
-        "built-up",
-        "built up",
-        "vegetation",
-        "forest",
-        "water body",
-        "water bodies",
-        "agriculture",
-        "agricultural",
-        "farmland",
-        "road",
-        "roads"
     ]
 
     caption_words = [
@@ -142,144 +175,122 @@ def route_question(question):
         "scene",
         "summarize",
         "summary",
-        "what is in this image",
-        "what can you see",
-        "what do you see",
-        "tell me about this image"
+        "what is in this image"
     ]
 
-    full_analysis_words = [
-        "explain everything",
-        "everything about this image",
-        "analyze this image",
-        "analyse this image",
-        "complete analysis",
-        "full analysis",
-        "detailed analysis",
-        "detailed description",
-        "complete description",
-        "analyze everything",
-        "analyse everything",
-        "give me details",
-        "give details",
-        "tell me everything",
-        "overall analysis",
-        "overall description",
-        "what is visible"
+    land_cover_words = [
+        "land cover",
+        "land-cover",
+        "urban",
+        "built up",
+        "vegetation",
+        "forest",
+        "water",
+        "agriculture",
+        "agricultural",
+        "road",
+        "roads"
     ]
 
-    for word in change_words:
-        if word in q:
-            return "change"
+    if any(word in question for word in change_words):
+        return "change"
 
-    for word in full_analysis_words:
-        if word in q:
-            return "full_analysis"
+    if any(word in question for word in land_cover_words):
+        return "land_cover"
 
-    for word in land_cover_words:
-        if word in q:
-            return "land_cover"
-
-    for word in caption_words:
-        if word in q:
-            return "caption"
+    if any(word in question for word in caption_words):
+        return "caption"
 
     return "vqa"
 
 
-def get_change_level(percent):
-
-    if percent < 5:
-        return "Low"
-    elif percent < 15:
-        return "Moderate"
-    elif percent < 30:
-        return "High"
-    else:
-        return "Very High"
-
-
 def analyze_change(before, after, threshold):
+
+    width = min(before.width, after.width)
+    height = min(before.height, after.height)
+
+    before = before.resize((width, height))
+    after = after.resize((width, height))
 
     before_array = np.array(before).astype(np.int16)
     after_array = np.array(after).astype(np.int16)
 
-    min_height = min(
-        before_array.shape[0],
-        after_array.shape[0]
-    )
+    difference = np.abs(before_array - after_array)
 
-    min_width = min(
-        before_array.shape[1],
-        after_array.shape[1]
-    )
+    difference_gray = np.max(difference, axis=2)
 
-    before_array = before_array[:min_height, :min_width]
-    after_array = after_array[:min_height, :min_width]
+    mask = difference_gray > threshold
 
-    difference = np.abs(
-        before_array - after_array
-    )
-
-    difference_score = difference.mean(axis=2)
-
-    mask = difference_score > threshold
-
-    changed_pixels = int(mask.sum())
+    changed_pixels = int(np.sum(mask))
     total_pixels = int(mask.size)
 
-    change_percentage = (
-        changed_pixels / total_pixels
-    ) * 100
+    if total_pixels > 0:
+        change_percentage = (
+            changed_pixels / total_pixels
+        ) * 100
+    else:
+        change_percentage = 0
 
-    diff_image = np.clip(
-        difference,
-        0,
-        255
-    ).astype(np.uint8)
+    difference_image = Image.fromarray(
+        np.clip(
+            difference_gray,
+            0,
+            255
+        ).astype(np.uint8)
+    )
 
-    mask_image = (
+    mask_image = Image.fromarray(
         mask.astype(np.uint8) * 255
     )
 
-    overlay = after_array.copy()
+    overlay_array = np.array(before).copy()
 
-    overlay[mask] = [
-        255,
-        0,
-        0
-    ]
+    overlay_array[mask] = [255, 0, 0]
+
+    overlay_image = Image.fromarray(
+        overlay_array
+    )
 
     return (
-        diff_image,
+        before,
+        after,
+        difference_image,
         mask_image,
-        overlay,
+        overlay_image,
         changed_pixels,
         total_pixels,
         change_percentage
     )
 
 
-def generate_full_analysis(image):
+def get_change_level(change_percentage):
 
-    caption_model = get_caption_model()
-    land_model = get_land_cover_model()
+    if change_percentage < 1:
+        return "Minimal"
 
-    caption = caption_model.generate_caption(image)
+    if change_percentage < 5:
+        return "Low"
 
-    land_results = land_model.analyze(image)
+    if change_percentage < 15:
+        return "Moderate"
 
-    significant_results = [
-        result
-        for result in land_results
-        if result["confidence"] >= 20
-    ]
+    return "High"
 
-    if not significant_results:
-        significant_results = land_results[:3]
 
-    return caption, significant_results
-st.sidebar.title("🛰️ SatQuery AI")
+st.sidebar.markdown(
+    """
+    <div style="
+        font-size:25px;
+        font-weight:800;
+        color:#60d5f5;
+        padding:10px 0 20px 0;
+    ">
+    🛰️ SatQuery AI
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
 
 page = st.sidebar.radio(
     "Navigation",
@@ -294,137 +305,161 @@ page = st.sidebar.radio(
 
 if page == "🏠 Dashboard":
 
-    st.title("🛰️ SatQuery AI")
-
     st.markdown(
-        "### Interactive Vision-Language Assistant for Satellite Image Analysis"
+        """
+        <div class="hero">
+        <div class="badge">SATELLITE INTELLIGENCE PLATFORM</div>
+        <div class="hero-title">
+        🛰️ SatQuery AI
+        </div>
+        <div class="hero-subtitle">
+        Interactive Vision-Language Assistant for Satellite Image Analysis
+        </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
-    st.markdown("---")
+    st.markdown(
+        '<div class="section-title">🚀 Platform Capabilities</div>',
+        unsafe_allow_html=True
+    )
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.markdown("""
-        <div class="card">
-        <h3>🤖 AI Agent</h3>
-        <p class="small-text">
-        Ask natural-language questions about satellite images.
-        </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div class="card">
+            <h3>🤖 AI Agent</h3>
+            <p>
+            Ask natural-language questions about satellite images
+            and receive AI-generated answers.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with col2:
-        st.markdown("""
-        <div class="card">
-        <h3>🛰️ Change Analysis</h3>
-        <p class="small-text">
-        Compare satellite images from different dates.
-        </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div class="card">
+            <h3>🛰️ Change Analysis</h3>
+            <p>
+            Compare satellite images from different dates
+            and visualize potential changes.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
     with col3:
-        st.markdown("""
-        <div class="card">
-        <h3>🌍 Land Cover</h3>
-        <p class="small-text">
-        Estimate major land-cover categories.
-        </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div class="card">
+            <h3>🌍 Land Cover</h3>
+            <p>
+            Estimate possible land-cover categories using
+            a vision-language model.
+            </p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    st.markdown("## 🔄 AI Workflow")
-
-    workflow = st.columns(4)
-
-    with workflow[0]:
-        st.markdown("""
-        <div class="metric-card">
-        <h3>1️⃣</h3>
-        <b>Upload</b>
-        <p class="small-text">Satellite image</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with workflow[1]:
-        st.markdown("""
-        <div class="metric-card">
-        <h3>2️⃣</h3>
-        <b>Query</b>
-        <p class="small-text">Natural language</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with workflow[2]:
-        st.markdown("""
-        <div class="metric-card">
-        <h3>3️⃣</h3>
-        <b>Analyze</b>
-        <p class="small-text">AI models</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with workflow[3]:
-        st.markdown("""
-        <div class="metric-card">
-        <h3>4️⃣</h3>
-        <b>Respond</b>
-        <p class="small-text">Actionable result</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    st.info(
-        "SatQuery AI combines vision-language analysis, "
-        "land-cover estimation and image-change detection "
-        "into a single interactive platform."
+    st.markdown(
+        '<div class="section-title">⚙️ AI Workflow</div>',
+        unsafe_allow_html=True
     )
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    workflow = [
+        ("01", "Upload", "Provide satellite imagery"),
+        ("02", "Query", "Ask a natural-language question"),
+        ("03", "Analyze", "AI processes the imagery"),
+        ("04", "Respond", "Receive an intelligent result")
+    ]
+
+    for col, item in zip(
+        [c1, c2, c3, c4],
+        workflow
+    ):
+
+        with col:
+
+            st.markdown(
+                f"""
+                <div class="workflow">
+
+                <div class="workflow-number">
+                {item[0]}
+                </div>
+
+                <div class="workflow-title">
+                {item[1]}
+                </div>
+
+                <div class="workflow-text">
+                {item[2]}
+                </div>
+
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
 
 elif page == "🤖 AI Agent":
 
-    st.title("🤖 AI Agent")
-
-    st.write(
-        "Upload a satellite image and ask a natural-language question."
+    st.markdown(
+        """
+        <div class="hero">
+        <div class="badge">VISION-LANGUAGE INTELLIGENCE</div>
+        <div class="hero-title">
+        🤖 AI Agent
+        </div>
+        <div class="hero-subtitle">
+        Ask questions about your satellite image using natural language.
+        </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     uploaded_file = st.file_uploader(
-        "📡 Upload Satellite Image",
-        type=["jpg", "jpeg", "png", "tif", "tiff"]
+        "🛰️ Upload a satellite image",
+        type=[
+            "jpg",
+            "jpeg",
+            "png",
+            "tif",
+            "tiff"
+        ],
+        key="agent_image"
     )
 
-    if uploaded_file:
+    if uploaded_file is not None:
 
         image = load_image(uploaded_file)
 
-        col1, col2 = st.columns([1, 1])
+        st.image(
+            image,
+            caption="Uploaded Satellite Image",
+            use_container_width=True
+        )
 
-        with col1:
+        question = st.text_input(
+            "💬 Ask your question",
+            placeholder="Example: What is visible in this image?"
+        )
 
-            st.image(
-                image,
-                caption="Uploaded Satellite Image",
-                use_container_width=True
-            )
-
-        with col2:
-
-            st.markdown("### 💬 Ask the AI Agent")
-
-            question = st.text_input(
-                "Your question",
-                placeholder="Example: Explain everything about this image"
-            )
-
-            analyze_button = st.button(
-                "🚀 Analyze Image",
-                use_container_width=True
-            )
-
-        if analyze_button:
+        if st.button(
+            "🤖 Analyze",
+            use_container_width=True
+        ):
 
             if not question.strip():
 
@@ -436,102 +471,32 @@ elif page == "🤖 AI Agent":
 
                 route = route_question(question)
 
-                st.markdown("---")
-
                 if route == "change":
 
                     st.warning(
-                        "🛰️ Change analysis requires two satellite "
-                        "images from different dates."
+                        "🛰️ This question requires comparing "
+                        "two satellite images. Please use the "
+                        "Change Analysis section."
                     )
-
-                    st.info(
-                        "Go to **🛰️ Change Analysis** from the sidebar "
-                        "to upload Before and After images."
-                    )
-
-                elif route == "full_analysis":
-
-                    with st.spinner(
-                        "🧠 Performing complete satellite image analysis..."
-                    ):
-
-                        caption, land_results = generate_full_analysis(
-                            image
-                        )
-
-                    st.markdown("## 🧠 Satellite Image Analysis")
-
-                    st.markdown(
-                        f"""
-                        <div class="answer-box">
-                        <h3>📡 Overall Description</h3>
-                        <p>{caption}</p>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-
-                    st.markdown("### 🌍 Estimated Land-Cover Categories")
-
-                    cols = st.columns(
-                        min(len(land_results), 3)
-                    )
-
-                    for index, result in enumerate(land_results):
-
-                        with cols[index % len(cols)]:
-
-                            st.markdown(
-                                f"""
-                                <div class="metric-card">
-                                <h3>{result["label"]}</h3>
-                                <h2>{result["confidence"]:.1f}%</h2>
-                                <p class="small-text">
-                                AI estimated score
-                                </p>
-                                </div>
-                                """,
-                                unsafe_allow_html=True
-                            )
-
-                    st.markdown("### 🔎 Interpretation")
-
-                    top_category = land_results[0]["label"]
-
-                    st.write(
-                        f"The strongest estimated category in this "
-                        f"image is **{top_category}** based on the "
-                        f"vision-language model's comparison of the "
-                        f"candidate land-cover descriptions."
-                    )
-
-                    st.markdown("""
-                    <div class="warning-box">
-                    ⚠️ <b>Important:</b> These land-cover scores are
-                    AI-assisted estimates from a general-purpose
-                    vision-language model. They are not a replacement
-                    for scientifically validated remote-sensing
-                    classification.
-                    </div>
-                    """, unsafe_allow_html=True)
 
                 elif route == "caption":
 
                     with st.spinner(
-                        "📝 Generating image description..."
+                        "Generating image description..."
                     ):
 
-                        caption = get_caption_model().generate_caption(
+                        model = get_caption_model()
+
+                        answer = model.generate_caption(
                             image
                         )
 
-                    st.markdown("## 📝 Image Description")
+                    st.subheader("🧠 AI Response")
 
                     st.markdown(
                         f"""
-                        <div class="answer-box">
-                        <p>{caption}</p>
+                        <div class="card">
+                        {answer}
                         </div>
                         """,
                         unsafe_allow_html=True
@@ -540,54 +505,109 @@ elif page == "🤖 AI Agent":
                 elif route == "land_cover":
 
                     with st.spinner(
-                        "🌍 Analyzing land cover..."
+                        "Analyzing land-cover patterns..."
                     ):
 
-                        results = get_land_cover_model().analyze(
+                        model = get_land_cover_model()
+
+                        results = model.analyze(
                             image
                         )
 
-                    st.markdown("## 🌍 Land-Cover Analysis")
+                    st.subheader(
+                        "🌍 Land-Cover Estimation"
+                    )
 
-                    cols = st.columns(3)
+                    for result in results:
 
-                    for index, result in enumerate(results):
+                        label = result["label"]
+                        confidence = result["confidence"]
 
-                        with cols[index % 3]:
+                        if confidence >= 20:
 
                             st.markdown(
                                 f"""
-                                <div class="metric-card">
-                                <h3>{result["label"]}</h3>
-                                <h2>{result["confidence"]:.1f}%</h2>
+                                <div class="card">
+
+                                <div style="
+                                    display:flex;
+                                    justify-content:space-between;
+                                    align-items:center;
+                                ">
+
+                                <div>
+                                <div style="
+                                    font-size:19px;
+                                    font-weight:700;
+                                    color:white;
+                                ">
+                                🌍 {label}
+                                </div>
+
+                                <div style="
+                                    color:#8fa9bb;
+                                    margin-top:5px;
+                                ">
+                                AI estimated confidence
+                                </div>
+                                </div>
+
+                                <div style="
+                                    font-size:23px;
+                                    font-weight:800;
+                                    color:#60d5f5;
+                                ">
+                                {confidence:.1f}%
+                                </div>
+
+                                </div>
+
+                                <div style="
+                                    background:#142838;
+                                    border-radius:10px;
+                                    height:10px;
+                                    margin-top:15px;
+                                    overflow:hidden;
+                                ">
+
+                                <div style="
+                                    width:{min(confidence,100):.1f}%;
+                                    background:linear-gradient(
+                                        90deg,
+                                        #176b87,
+                                        #32b5d3
+                                    );
+                                    height:100%;
+                                    border-radius:10px;
+                                ">
+                                </div>
+
+                                </div>
+
                                 </div>
                                 """,
                                 unsafe_allow_html=True
                             )
 
-                    st.warning(
-                        "These are AI-assisted relative scores, "
-                        "not scientifically validated land-cover "
-                        "classification probabilities."
-                    )
-
                 else:
 
                     with st.spinner(
-                        "🤖 AI is analyzing your question..."
+                        "AI is analyzing the satellite image..."
                     ):
 
-                        answer = get_vqa_model().answer_question(
+                        model = get_vqa_model()
+
+                        answer = model.answer_question(
                             image,
                             question
                         )
 
-                    st.markdown("## 🤖 AI Response")
+                    st.subheader("🧠 AI Response")
 
                     st.markdown(
                         f"""
-                        <div class="answer-box">
-                        <p>{answer}</p>
+                        <div class="card">
+                        {answer}
                         </div>
                         """,
                         unsafe_allow_html=True
@@ -596,11 +616,19 @@ elif page == "🤖 AI Agent":
 
 elif page == "🛰️ Change Analysis":
 
-    st.title("🛰️ Bi-Temporal Change Analysis")
-
-    st.write(
-        "Compare two satellite images of the same area "
-        "from different dates."
+    st.markdown(
+        """
+        <div class="hero">
+        <div class="badge">BI-TEMPORAL SATELLITE ANALYSIS</div>
+        <div class="hero-title">
+        🛰️ Change Analysis
+        </div>
+        <div class="hero-subtitle">
+        Compare two satellite images and visualize potential changes.
+        </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     col1, col2 = st.columns(2)
@@ -609,162 +637,237 @@ elif page == "🛰️ Change Analysis":
 
         before_file = st.file_uploader(
             "📅 Before Image",
-            type=["jpg", "jpeg", "png", "tif", "tiff"],
-            key="before"
+            type=[
+                "jpg",
+                "jpeg",
+                "png",
+                "tif",
+                "tiff"
+            ],
+            key="before_image"
         )
 
     with col2:
 
         after_file = st.file_uploader(
             "📅 After Image",
-            type=["jpg", "jpeg", "png", "tif", "tiff"],
-            key="after"
+            type=[
+                "jpg",
+                "jpeg",
+                "png",
+                "tif",
+                "tiff"
+            ],
+            key="after_image"
         )
 
     threshold = st.slider(
-        "🎚️ Change Detection Threshold",
+        "🎚️ Pixel Difference Threshold",
         min_value=5,
         max_value=100,
         value=30
     )
 
-    if before_file and after_file:
+    if before_file is not None and after_file is not None:
 
-        before = load_image(before_file)
-        after = load_image(after_file)
+        before_image = load_image(
+            before_file
+        )
+
+        after_image = load_image(
+            after_file
+        )
 
         col1, col2 = st.columns(2)
 
         with col1:
+
             st.image(
-                before,
+                before_image,
                 caption="Before",
                 use_container_width=True
             )
 
         with col2:
+
             st.image(
-                after,
+                after_image,
                 caption="After",
                 use_container_width=True
             )
 
         if st.button(
-            "🔍 Detect Changes",
+            "🛰️ Analyze Changes",
             use_container_width=True
         ):
 
             with st.spinner(
-                "Analyzing image differences..."
+                "Analyzing satellite images..."
             ):
 
                 (
-                    diff_image,
+                    before,
+                    after,
+                    difference_image,
                     mask_image,
-                    overlay,
+                    overlay_image,
                     changed_pixels,
                     total_pixels,
                     change_percentage
                 ) = analyze_change(
-                    before,
-                    after,
+                    before_image,
+                    after_image,
                     threshold
                 )
 
-            st.markdown("---")
-
-            st.markdown("## 📊 Change Metrics")
-
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                st.metric(
-                    "Changed Pixels",
-                    f"{changed_pixels:,}"
-                )
-
-            with col2:
-                st.metric(
-                    "Total Pixels",
-                    f"{total_pixels:,}"
-                )
-
-            with col3:
-                st.metric(
-                    "Potential Change",
-                    f"{change_percentage:.2f}%"
-                )
-
-            level = get_change_level(
+            change_level = get_change_level(
                 change_percentage
             )
 
-            st.info(
-                f"Detected change level: **{level}**"
+            st.subheader(
+                "📊 Change Analysis Results"
             )
 
-            st.markdown("## 🛰️ Change Visualization")
+            m1, m2, m3 = st.columns(3)
 
-            col1, col2, col3 = st.columns(3)
+            with m1:
 
-            with col1:
+                st.markdown(
+                    f"""
+                    <div class="metric-card">
+                    <div class="metric-value">
+                    {changed_pixels:,}
+                    </div>
+                    <div class="metric-label">
+                    Changed Pixels
+                    </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with m2:
+
+                st.markdown(
+                    f"""
+                    <div class="metric-card">
+                    <div class="metric-value">
+                    {change_percentage:.2f}%
+                    </div>
+                    <div class="metric-label">
+                    Potential Change
+                    </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            with m3:
+
+                st.markdown(
+                    f"""
+                    <div class="metric-card">
+                    <div class="metric-value">
+                    {change_level}
+                    </div>
+                    <div class="metric-label">
+                    Change Level
+                    </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            st.markdown(
+                '<div class="section-title">🔎 Visual Analysis</div>',
+                unsafe_allow_html=True
+            )
+
+            c1, c2, c3 = st.columns(3)
+
+            with c1:
+
                 st.image(
-                    diff_image,
+                    difference_image,
                     caption="Difference Image",
                     use_container_width=True
                 )
 
-            with col2:
+            with c2:
+
                 st.image(
                     mask_image,
-                    caption="Binary Change Mask",
+                    caption="Change Mask",
                     use_container_width=True
                 )
 
-            with col3:
+            with c3:
+
                 st.image(
-                    overlay,
-                    caption="Red Change Overlay",
+                    overlay_image,
+                    caption="Potential Changes",
                     use_container_width=True
                 )
 
             st.download_button(
                 "⬇️ Download Change Overlay",
                 data=image_download_bytes(
-                    Image.fromarray(overlay)
+                    overlay_image
                 ),
                 file_name="satquery_change_overlay.png",
-                mime="image/png"
+                mime="image/png",
+                use_container_width=True
             )
-
-            st.markdown("### ⚠️ Interpretation Warning")
 
             st.warning(
-                "Pixel differences do not automatically mean real-world "
-                "land-use change. Clouds, shadows, seasonal variation, "
-                "lighting differences, image misalignment and sensor "
-                "differences can produce false changes."
+                "⚠️ Potential changes can also be caused by "
+                "clouds, shadows, lighting, seasonal differences, "
+                "image misalignment, or sensor differences. "
+                "Results should be reviewed before making decisions."
             )
+
+    else:
+
+        st.info(
+            "Upload both Before and After satellite images "
+            "to perform change analysis."
+        )
 
 
 elif page == "🌍 Land Cover":
 
-    st.title("🌍 Land-Cover Analysis")
-
-    st.write(
-        "Estimate major land-cover categories using "
-        "a vision-language model."
+    st.markdown(
+        """
+        <div class="hero">
+        <div class="badge">AI LAND-COVER ESTIMATION</div>
+        <div class="hero-title">
+        🌍 Land-Cover Analysis
+        </div>
+        <div class="hero-subtitle">
+        Estimate possible land-cover categories from a satellite image.
+        </div>
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
     uploaded_file = st.file_uploader(
-        "📡 Upload Satellite Image",
-        type=["jpg", "jpeg", "png", "tif", "tiff"],
-        key="landcover"
+        "🛰️ Upload a satellite image",
+        type=[
+            "jpg",
+            "jpeg",
+            "png",
+            "tif",
+            "tiff"
+        ],
+        key="land_cover_image"
     )
 
-    if uploaded_file:
+    if uploaded_file is not None:
 
-        image = load_image(uploaded_file)
+        image = load_image(
+            uploaded_file
+        )
 
         st.image(
             image,
@@ -778,65 +881,157 @@ elif page == "🌍 Land Cover":
         ):
 
             with st.spinner(
-                "Analyzing land-cover categories..."
+                "AI is analyzing land-cover patterns..."
             ):
 
-                results = get_land_cover_model().analyze(
+                model = get_land_cover_model()
+
+                results = model.analyze(
                     image
                 )
 
-            st.markdown("---")
+            st.subheader(
+                "🔎 Estimated Land-Cover Types"
+            )
 
-            st.markdown("## 🌍 Estimated Categories")
+            detected = [
+                result
+                for result in results
+                if result["confidence"] >= 20
+            ]
 
-            cols = st.columns(3)
+            if detected:
 
-            for index, result in enumerate(results):
+                for result in detected:
 
-                with cols[index % 3]:
+                    label = result["label"]
+                    confidence = result["confidence"]
 
                     st.markdown(
                         f"""
-                        <div class="metric-card">
-                        <h3>{result["label"]}</h3>
-                        <h2>{result["confidence"]:.1f}%</h2>
-                        <p class="small-text">
-                        AI estimated score
-                        </p>
+                        <div class="card">
+
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            align-items:center;
+                        ">
+
+                        <div>
+
+                        <div style="
+                            font-size:20px;
+                            font-weight:700;
+                            color:white;
+                        ">
+                        🌍 {label}
+                        </div>
+
+                        <div style="
+                            color:#8fa9bb;
+                            margin-top:5px;
+                        ">
+                        AI estimated confidence
+                        </div>
+
+                        </div>
+
+                        <div style="
+                            font-size:24px;
+                            font-weight:800;
+                            color:#60d5f5;
+                        ">
+                        {confidence:.1f}%
+                        </div>
+
+                        </div>
+
+                        <div style="
+                            background:#142838;
+                            border-radius:10px;
+                            height:10px;
+                            margin-top:15px;
+                            overflow:hidden;
+                        ">
+
+                        <div style="
+                            width:{min(confidence,100):.1f}%;
+                            background:linear-gradient(
+                                90deg,
+                                #176b87,
+                                #32b5d3
+                            );
+                            height:100%;
+                            border-radius:10px;
+                        ">
+                        </div>
+
+                        </div>
+
                         </div>
                         """,
                         unsafe_allow_html=True
                     )
 
-            st.markdown("### 📊 Model Scores")
+            else:
+
+                st.info(
+                    "No land-cover category reached "
+                    "the confidence threshold."
+                )
+
+            st.markdown("---")
+
+            st.subheader(
+                "📊 All Category Scores"
+            )
 
             for result in results:
 
+                label = result["label"]
+                confidence = result["confidence"]
+
                 st.write(
-                    f"**{result['label']}** — "
-                    f"{result['confidence']:.2f}%"
+                    f"**{label}** — {confidence:.1f}%"
                 )
 
-                st.progress(
-                    min(
-                        int(result["confidence"]),
-                        100
-                    )
-                )
+            st.markdown("---")
 
-            st.markdown("""
-            <div class="warning-box">
-            ⚠️ These scores are generated by a general-purpose
-            vision-language model and should be treated as
-            AI-assisted estimates rather than scientifically
-            validated remote-sensing classification.
-            </div>
-            """, unsafe_allow_html=True)
+            st.warning(
+                "⚠️ These confidence scores are AI estimates "
+                "from a general-purpose vision-language model. "
+                "They are intended for demonstration and "
+                "decision-support purposes, not scientifically "
+                "validated land-cover mapping."
+            )
 
+    else:
 
-st.markdown("---")
+        st.info(
+            "Upload a satellite image to perform land-cover analysis."
+        )
+
 
 st.markdown(
-    "<center>🛰️ SatQuery AI • SIH 2026 Prototype</center>",
+    """
+    <br><br>
+
+    <div style="
+        text-align:center;
+        color:#607d8b;
+        padding:20px;
+        border-top:1px solid #17394c;
+    ">
+
+    🛰️ <b>SatQuery AI</b><br>
+
+    Interactive Vision-Language Assistant for Satellite Image Analysis<br>
+
+    <span style="font-size:13px;">
+    SIH 2026 Prototype
+    </span>
+
+    </div>
+    """,
     unsafe_allow_html=True
 )
