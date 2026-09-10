@@ -3,9 +3,10 @@ import numpy as np
 from PIL import Image
 from io import BytesIO
 
-from app.ai_model import SatelliteAI
-from app.caption_model import SatelliteCaptioner
-from app.land_cover import LandCoverAnalyzer
+from ai_model import SatelliteAI
+from caption_model import SatelliteCaptioner
+from land_cover import LandCoverAnalyzer
+
 
 st.set_page_config(
     page_title="SatQuery AI",
