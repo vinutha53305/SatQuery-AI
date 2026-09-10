@@ -1,0 +1,12 @@
+venv/
+bigearthnet-venv/
+__pycache__/
+*.pyc
+*.pyo
+*.bin
+*.pt
+*.pth
+*.safetensors
+.env
+.streamlit/secrets.toml
+bigearthnet/
